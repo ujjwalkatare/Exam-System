@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color:#e93f1a">Exam Responses</h2>
+    
+    {% if response_data %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Score</th>
+                <th>Actions</th>
+                <th>Responses</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student, data in response_data.items %}
+            <tr>
+                <td>
+                    <a href="#" class="toggle-responses" data-student="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</a>
+                </td>
+                <td>{{ data.score|floatformat:2 }} / {{ latest_exam.total_marks }}</td>
+                <td>
+                    <form action="{% url 'send_results' student.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </td>
+                <td>
+                    <div class="response-details" id="responses-{{ student.id }}" style="display: none;">
+                        <ul>
+                            {% for response in data.responses %}
+                            <li>
+                                <strong>Question:</strong> {{ response.question }}<br>
+                                <strong>Given Answer:</strong> {{ response.given_answer }}<br>
+                                <strong>Correct Answer:</strong> {{ response.correct_answer }}<br>
+                                <strong>Status:</strong> 
+                                {% if response.is_correct %}
+                                <span class="text-success">Correct</span>
+                                {% else %}
+                                <span class="text-danger">Incorrect</span>
+                                {% endif %}
+                            </li>
+                            <hr>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No responses available.</p>
+    {% endif %}
+</div>
+
+<style>
+    .hero_area {
+        height: 70px;
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.toggle-responses').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            const studentId = this.getAttribute('data-student');
+            const responseDetails = document.getElementById('responses-' + studentId);
+            responseDetails.style.display = responseDetails.style.display === "none" ? "block" : "none";
+        });
+    });
+</script>
+{% endblock body %}

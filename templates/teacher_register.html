@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<section class="contact_section py-3">
+    <div class="container">
+        <div class="heading_container text-center mb-4">
+            <h2>
+              <span style="color:#e93f1a"> Teacher Registration </span>
+            </h2>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card contact_form">
+                    <div class="card-body p-3 mt-4"> <!-- Adjusted padding -->
+                        <form action="#" method="post" class="custom-form registration-form" role="form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <div class="row" >
+                                        <div class="col-6 mb-2">
+                                            <input type="text" id="fname" class="form-control" name="fname" placeholder="First Name" required>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <input type="text" id="lname" class="form-control" name="lname" placeholder="Last Name" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <div class="row">
+                                        <div class="col-6 mb-2">
+                                            <input type="email" id="username" class="form-control" name="username" placeholder="Email" required>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <input type="password" id="password1" class="form-control" name="password1" placeholder="Confirm Password" required>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 text-uppercase" type="submit" name="button">Register</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock body %}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Data</title>
+</head>
+<body>
+    <h1>Blockchain Data</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Block Index</th>
+                <th>Timestamp</th>
+                <th>Previous Hash</th>
+                <th>Hash</th>
+                <th>Exam Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for block in blocks %}
+                <tr>
+                    <td>{{ block.index }}</td>
+                    <td>{{ block.timestamp }}</td>
+                    <td>{{ block.previous_hash }}</td>
+                    <td>{{ block.hash }}</td>
+                    <td>{{ block.exam_data|json_script:"examData" }}</td> <!-- Display the exam data (in JSON format) -->
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No blocks found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

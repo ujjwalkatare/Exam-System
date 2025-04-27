@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <form action="{% url 'submit_exam' %}" method="post" id="examForm" onsubmit="stopCameraAndRedirect(); return false;">
+        {% csrf_token %}
+        <div class="container mt-5">
+            <h2 class="text-center mb-4" style="color:#e93f1a">Student Dashboard</h2>
+            <img id="video-feed" src="{% url 'video_feed' %}" width="250" height="250" class="mx-auto d-block" />
+            
+            <p style="color:#e93f1a">Welcome, {{ fname }}!</p>
+            <p id="timer" style="font-size: 20px; font-weight: bold; color: #e93f1a;">Time Left: {{ latest_exam.duration }} minutes</p>
+
+            {% if latest_exam %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>{{ latest_exam.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="exam_id" value="{{ latest_exam.id }}">
+                    <p><strong>Date:</strong> {{ latest_exam.date }}</p>
+                    <p><strong>Duration:</strong> {{ latest_exam.duration }} minutes</p>
+                    <p><strong>Total Marks:</strong> {{ latest_exam.total_marks }}</p>
+
+                    <hr>
+                    <h5>Questions:</h5>
+                    <ol>
+                        {% for question in latest_exam.questions.all %}
+                        <li>
+                            <p>{{ question.text }}</p>
+                            <ul>
+                                <li>
+                                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option1 }}" id="q{{ question.id }}_option1">
+                                    <label for="q{{ question.id }}_option1">{{ question.option1 }}</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option2 }}" id="q{{ question.id }}_option2">
+                                    <label for="q{{ question.id }}_option2">{{ question.option2 }}</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option3 }}" id="q{{ question.id }}_option3">
+                                    <label for="q{{ question.id }}_option3">{{ question.option3 }}</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option4 }}" id="q{{ question.id }}_option4">
+                                    <label for="q{{ question.id }}_option4">{{ question.option4 }}</label>
+                                </li>
+                            </ul>
+                        </li>
+                        {% empty %}
+                        <li>No questions available for this exam.</li>
+                        {% endfor %}
+                    </ol>
+            
+
+                    <button type="submit" class="btn" style="background-color: #e93f1a; color: white;">Submit Exam</button>
+                </div>
+            </div>
+            {% else %}
+            <p>No exams available.</p>
+            {% endif %}
+        </div>
+    </form>
+
+    <script>
+        // Get the remaining time from the context (converted to seconds for easier manipulation)
+        var duration = {{ latest_exam.duration }} * 60;  // Convert minutes to seconds
+        var videoFeed = document.getElementById("video-feed");
+
+        // Timer function
+        function startTimer() {
+            var timerDisplay = document.getElementById("timer");
+
+            // Update the timer every second
+            var countdown = setInterval(function () {
+                if (duration <= 0) {
+                    clearInterval(countdown);  // Stop the countdown
+                    timerDisplay.innerHTML = "Time's up!";
+                    // Hide the video feed (simulating closing the camera)
+                    videoFeed.style.display = "none";
+
+                    // Show popup message and redirect to result page
+                    alert('Time is up! Your exam has been submitted automatically.');
+                    window.location.href = "{% url 'view_result' %}";  // Redirect to the result page
+                } else {
+                    var minutes = Math.floor(duration / 60);
+                    var seconds = duration % 60;
+                    // Format the time as mm:ss
+                    timerDisplay.innerHTML = "Time Left: " + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                    duration--;
+                }
+            }, 1000);
+        }
+
+        // Start the timer when the page is loaded
+        window.onload = function() {
+            startTimer();
+        };
+
+        // Function to stop the camera feed and redirect to result page when the exam is manually submitted
+        function stopCameraAndRedirect() {
+            // Stop the video feed (simulating closing the camera)
+            videoFeed.style.display = "none";
+
+            // Optionally, you could add a confirmation message to show before redirecting
+            alert("Your exam has been submitted. Redirecting to the result page.");
+
+            // Redirect to the result page after submission
+            window.location.href = "{% url 'view_result' %}";  // Redirect to the result page
+        }
+
+        // Stop the video feed when the page is unloaded (to stop camera feed on redirect)
+        window.onbeforeunload = function() {
+            var videoElement = document.getElementById("video-feed");
+            videoElement.src = "";  // Stop the video feed when the page is unloaded
+        };
+    </script>
+{% endblock body %}

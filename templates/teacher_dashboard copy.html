@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+<div class="container mt-5">
+
+    <h2 class=" text-center mb-4 a"style="color:#e93f1a">Teacher Dashboard - MCQ Exam Creation</h2>
+    <div class="form-group">
+        <a href="response" class="btn btn-primary w-10 text-uppercase" style="background-color: #e93f1a; border-color: #e93f1a; color: white;">Response</a>
+    </div>
+    
+    <!-- Exam and MCQ Creation Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 style="color:#e93f1a">Create New Exam with MCQs</h4>
+        </div>
+        <div class="card-body">
+            <form id="examMcqForm" action="{% url 'create_exam' %}" method="post" class="custom-form">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="examTitle">Exam Title</label>
+                    <input type="text" id="examTitle" class="form-control" name="examTitle" placeholder="Enter Exam Title" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="examDate">Exam Date</label>
+                    <input type="date" id="examDate" class="form-control" name="examDate" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="examDuration">Duration (minutes)</label>
+                    <input type="number" id="examDuration" class="form-control" name="examDuration" placeholder="Enter Duration" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="marks">Total Marks</label>
+                    <input type="number" id="marks" class="form-control" name="marks" placeholder="Enter Total Marks" required>
+                </div>
+
+                <div id="mcqContainer">
+                    <div class="mcq">
+                        <h5>MCQ 1</h5>
+                        <div class="form-group mb-3">
+                            <label for="questionText">Question</label>
+                            <input type="text" class="form-control" name="mcq_questions[0][question]" placeholder="Enter your question" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="answerOption1">Option 1</label>
+                            <input type="text" class="form-control" name="mcq_questions[0][option1]" placeholder="Enter option 1" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="answerOption2">Option 2</label>
+                            <input type="text" class="form-control" name="mcq_questions[0][option2]" placeholder="Enter option 2" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="answerOption3">Option 3</label>
+                            <input type="text" class="form-control" name="mcq_questions[0][option3]" placeholder="Enter option 3" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="answerOption4">Option 4</label>
+                            <input type="text" class="form-control" name="mcq_questions[0][option4]" placeholder="Enter option 4" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="correctAnswer">Correct Answer</label>
+                            <input type="text" class="form-control" name="mcq_questions[0][correct_answer]" placeholder="Enter correct answer" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <button type="button" class="btn btn-secondary" id="addMcq">Add Another MCQ</button>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary w-100 text-uppercase" type="submit" style="background-color: #e93f1a; border-color: #e93f1a; color: white;">Create Exam</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
+
+<style>
+    .card {
+        padding: 20px;
+    }
+    h2 {
+        margin-bottom: 20px;
+    }
+   .hero_area{
+    height:70px
+   }
+</style>
+
+<script>
+    let mcqCount = 1; // Start counting from 1
+
+    document.getElementById('addMcq').addEventListener('click', function() {
+        const mcqContainer = document.getElementById('mcqContainer');
+        const mcqDiv = document.createElement('div');
+        mcqDiv.classList.add('mcq');
+        mcqDiv.innerHTML = `
+            <h5>MCQ ${mcqCount + 1}</h5>
+            <div class="form-group mb-3">
+                <label for="questionText">Question</label>
+                <input type="text" class="form-control" name="mcq_questions[${mcqCount}][question]" placeholder="Enter your question" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="answerOption1">Option 1</label>
+                <input type="text" class="form-control" name="mcq_questions[${mcqCount}][option1]" placeholder="Enter option 1" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="answerOption2">Option 2</label>
+                <input type="text" class="form-control" name="mcq_questions[${mcqCount}][option2]" placeholder="Enter option 2" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="answerOption3">Option 3</label>
+                <input type="text" class="form-control" name="mcq_questions[${mcqCount}][option3]" placeholder="Enter option 3" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="answerOption4">Option 4</label>
+                <input type="text" class="form-control" name="mcq_questions[${mcqCount}][option4]" placeholder="Enter option 4" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="correctAnswer">Correct Answer</label>
+                <input type="text" class="form-control" name="mcq_questions[${mcqCount}][correct_answer]" placeholder="Enter correct answer" required>
+            </div>
+        `;
+        mcqContainer.appendChild(mcqDiv);
+        mcqCount++;
+    });
+</script>
+
+
+{% endblock body %}

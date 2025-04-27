@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Hash Decoder | Secure Verification</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4e73df;
+        --secondary-color: #1cc88a;
+        --dark-color: #5a5c69;
+      }
+
+      body {
+        background-color: #f8f9fc;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .main-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      .title {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: var(--secondary-color);
+      }
+
+      .hash-form {
+        margin: 2rem 0;
+      }
+
+      .hash-input {
+        border-radius: 0.375rem 0 0 0.375rem;
+        border-right: none;
+        transition: all 0.3s;
+      }
+
+      .hash-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        border-color: var(--primary-color);
+      }
+
+      .decode-btn {
+        border-radius: 0 0.375rem 0.375rem 0;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        transition: all 0.3s;
+      }
+
+      .decode-btn:hover {
+        background-color: #3a5bd9;
+        transform: translateY(-1px);
+      }
+
+      .result-card {
+        border-left: 4px solid var(--secondary-color);
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.4s ease-out;
+      }
+
+      .result-card.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .result-title {
+        color: var(--dark-color);
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .result-content {
+        font-family: "Courier New", Courier, monospace;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .loading-spinner {
+        display: none;
+        width: 2rem;
+        height: 2rem;
+        border: 0.25em solid rgba(78, 115, 223, 0.2);
+        border-top-color: var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 1rem auto;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--dark-color);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+      <div class="main-container">
+        <h1 class="title text-center">Blockchain Hash Decoder</h1>
+
+        <div class="hash-form">
+          <form id="hashForm" method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+              <input
+                type="text"
+                name="hash_input"
+                id="hashInput"
+                class="form-control form-control-lg hash-input"
+                placeholder="Enter 64-character hexadecimal hash..."
+                value="{{ hash_input }}"
+                pattern="[0-9a-fA-F]{64}"
+                title="Please enter a valid 64-character hexadecimal hash"
+                required
+              />
+              <button type="submit" class="btn btn-primary decode-btn">
+                <span id="btnText">Decode</span>
+                <span id="btnSpinner" class="loading-spinner"></span>
+              </button>
+            </div>
+            <div class="form-text text-muted mt-2">
+              Enter a transaction hash from your blockchain records
+            </div>
+          </form>
+        </div>
+
+        <div id="resultContainer">
+          {% if result and not result.error %}
+          <div class="result-card show">
+            <h4 class="result-title">Decoded Data ({{ result.type }})</h4>
+            <p class="result-content mb-0">{{ result.data }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <footer class="text-center mt-4">
+        <p>© 2023 Blockchain Verification System | Secure Hash Decoder</p>
+      </footer>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const hashForm = document.getElementById("hashForm");
+        const hashInput = document.getElementById("hashInput");
+        const resultContainer = document.getElementById("resultContainer");
+        const btnText = document.getElementById("btnText");
+        const btnSpinner = document.getElementById("btnSpinner");
+
+        // Focus the input field on page load
+        hashInput.focus();
+
+        // Form submission handler
+        hashForm.addEventListener("submit", function (e) {
+          // Show loading state
+          btnText.textContent = "Decoding...";
+          btnSpinner.style.display = "inline-block";
+
+          // If we had AJAX implementation, we would use this:
+          // e.preventDefault();
+          // decodeHash(hashInput.value);
+        });
+
+        // Animation for new results
+        function showResult(data) {
+          resultContainer.innerHTML = `
+                    <div class="result-card">
+                        <h4 class="result-title">Decoded Data (${data.type})</h4>
+                        <p class="result-content mb-0">${data.content}</p>
+                    </div>
+                `;
+
+          setTimeout(() => {
+            document.querySelector(".result-card").classList.add("show");
+          }, 50);
+        }
+
+        // Sample function for AJAX implementation
+        function decodeHash(hash) {
+          fetch("/api/decode-hash", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({ hash_input: hash }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              showResult(data);
+              resetForm();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              resetForm();
+            });
+        }
+
+        function resetForm() {
+          btnText.textContent = "Decode";
+          btnSpinner.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

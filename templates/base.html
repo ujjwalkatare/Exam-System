@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Exam System</title>
+  
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/responsive.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+</head>
+<body>
+  <div class="hero_area">
+    <header class="header_section">
+      <div class="container">
+        <nav class="navbar navbar-expand-lg custom_nav-container pt-3">
+          <a class="navbar-brand mr-5" href="{% url 'index' %}">
+            <img src="{% static 'images/logo.png' %}" alt="">
+            <span>Exam System</span>
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="d-flex ml-auto flex-column flex-lg-row align-items-center">
+              <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'log_out' %}">Log Out ({{ user.first_name }})</a>
+                  </li>
+                {% else %}
+                  <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'view_blockchain' %}">Home <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registrationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Registration</a>
+                    <div class="dropdown-menu" aria-labelledby="registrationDropdown">
+                      <a class="dropdown-item" href="{% url 'register' %}">Student</a>
+                      <a class="dropdown-item" href="{% url 'teacher_register' %}">Teacher</a>
+                    </div>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login</a>
+                    <div class="dropdown-menu" aria-labelledby="loginDropdown">
+                      <a class="dropdown-item" href="{% url 'log_in' %}">Student</a>
+                      <a class="dropdown-item" href="{% url 'teacher_log_in' %}">Teacher</a>
+                    </div>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <script>
+        var m = "{{ message }}"
+        swal("Success!", m, 'success');
+    </script>
+    {% elif message.tags == 'danger' %}
+    <script>
+        var m = "{{ message }}"
+        swal("Error!", m, 'error');
+    </script>
+    {% elif message.tags == 'info' %}
+    <script>
+        var m = "{{ message }}"
+        swal(m, "Take care of yourself!!!", 'info');
+    </script>
+    {% endif %}
+    {% endfor %}
+        {% block body %}
+        {% endblock body %}
+  </div>
+  
+  <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+</body>
+</html>

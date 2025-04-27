@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color:#e93f1a">Your Exam Results</h2>
+    
+    <h3>Your Score: {{ score|floatformat:2 }} / {{ total_marks }}</h3>
+
+    <div class="alert alert-info">
+        <strong>Emotion Detection Result:</strong> {{ emotion_message }}
+    </div>
+
+    
+    {% if response_data %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Your Answer</th>
+                <th>Correct Answer</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for response in response_data %}
+            <tr>
+                <td>{{ response.question }}</td>
+                <td>{{ response.given_answer }}</td>
+                <td>{{ response.correct_answer }}</td>
+                <td>
+                    {% if response.is_correct %}
+                    <span class="text-success">Correct</span>
+                    {% else %}
+                    <span class="text-danger">Incorrect</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No results available.</p>
+    {% endif %}
+</div>
+
+<style>
+    .hero_area {
+        height: 70px;
+    }
+</style>
+{% endblock body %}

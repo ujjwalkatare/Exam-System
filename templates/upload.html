@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div style="text-align: center; margin-top: 50px;">
+    <h2>Face Recognition System</h2>
+    <form method="POST" action="{% url 'open_camera' %}" style="margin-top: 20px;">
+        {% csrf_token %}
+        <button type="submit" style="padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; background-color: #4CAF50; color: white; border-radius: 5px;">Open Camera</button>
+    </form>
+</div>
+<style>
+    .card {
+        padding: 20px;
+    }
+    h2 {
+        margin-bottom: 20px;
+    }
+   .hero_area{
+    height:70px
+   }
+</style>
+{% endblock body %}
